@@ -20,9 +20,10 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - uses: haskell/actions/setup@v2
+    - uses: haskell-actions/setup@v2
       id: setup-haskell
       with:
+        cabal-version: '3.10'
         ghc-version: ${{ matrix.ghc }}
 
     - uses: actions/cache@v4.0.2
@@ -38,7 +39,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install libsdl2-dev
+        sudo apt-get install pkg-config libsdl2-dev
 
     - name: Install system dependencies macOS
       if: matrix.os == 'macOS-latest'
@@ -67,18 +68,18 @@ jobs:
         EOF
 
     - name: Prepare Vulkan SDK
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      uses: humbletim/install-vulkan-sdk@v1.1.1
       with:
-        vulkan-query-version: latest
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-        vulkan-use-cache: true
+        version: latest
+        cache: true
 
     - name: Make libvulkan.1.dylib available on OSX
       if: matrix.os == 'macOS-latest'
       shell: bash
       run: |
         file $VULKAN_SDK/lib/libvulkan.1.dylib
-        ln -s $VULKAN_SDK/lib/libvulkan.1.dylib /usr/local/lib/libvulkan.1.dylib
+        sudo mkdir -p -m 775 /usr/local/lib
+        sudo ln -s $VULKAN_SDK/lib/libvulkan.1.dylib /usr/local/lib/libvulkan.1.dylib
 
     - name: Inform Cabal about Vulkan
       shell: bash
@@ -110,6 +111,7 @@ jobs:
         else
           echo "glslc could not be found"
           cabal configure -fgeneric-instances -f-raytracing -f-have-shaderc
+          exit 1
         fi
       shell: bash
 
@@ -150,11 +152,12 @@ jobs:
     - uses: actions/checkout@v4
       with:
         submodules: 'recursive'
-    - uses: haskell/actions/setup@v2
+    - uses: haskell-actions/setup@v2
       with:
         stack-version: 'latest'
         enable-stack: true
         ghc-version: '8.10'
+        cabal-version: '3.10'
 
     - name: Cache stack things
       uses: actions/cache@v4.0.2
@@ -175,7 +178,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install libsdl2-dev
+        sudo apt-get install pkg-config libsdl2-dev
 
     - name: Install system dependencies Windows
       if: matrix.os == 'windows-latest'
@@ -201,11 +204,10 @@ jobs:
         brew install pkg-config sdl2
 
     - name: Prepare Vulkan SDK
-      uses: humbletim/setup-vulkan-sdk@v1.2.0
+      uses: humbletim/install-vulkan-sdk@v1.1.1
       with:
-        vulkan-query-version: latest
-        vulkan-components: Vulkan-Headers, Vulkan-Loader, Glslang
-        vulkan-use-cache: true
+        version: latest
+        cache: true
 
     - name: Inform Stack about Vulkan
       shell: bash
