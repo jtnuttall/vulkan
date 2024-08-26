@@ -78,6 +78,7 @@ jobs:
       shell: bash
       run: |
         file $VULKAN_SDK/lib/libvulkan.1.dylib
+        mkdir -p -m 775 /usr/local/lib
         ln -s $VULKAN_SDK/lib/libvulkan.1.dylib /usr/local/lib/libvulkan.1.dylib
 
     - name: Inform Cabal about Vulkan
