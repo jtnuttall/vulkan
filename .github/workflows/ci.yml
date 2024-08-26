@@ -39,7 +39,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install libsdl2-dev
+        sudo apt-get install pkg-config libsdl2-dev
 
     - name: Install system dependencies macOS
       if: matrix.os == 'macOS-latest'
@@ -78,8 +78,8 @@ jobs:
       shell: bash
       run: |
         file $VULKAN_SDK/lib/libvulkan.1.dylib
-        mkdir -p -m 775 /usr/local/lib
-        ln -s $VULKAN_SDK/lib/libvulkan.1.dylib /usr/local/lib/libvulkan.1.dylib
+        sudo mkdir -p -m 775 /usr/local/lib
+        sudo ln -s $VULKAN_SDK/lib/libvulkan.1.dylib /usr/local/lib/libvulkan.1.dylib
 
     - name: Inform Cabal about Vulkan
       shell: bash
@@ -178,7 +178,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install libsdl2-dev
+        sudo apt-get install pkg-config libsdl2-dev
 
     - name: Install system dependencies Windows
       if: matrix.os == 'windows-latest'
